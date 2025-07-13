@@ -9,14 +9,18 @@ public class SpeedTest {
         for (int i = firstLine; i <= lastLine; i++){
             System.out.println("line: " + i);
             int[] unsolved = puzzles.getPuzzle(i);
+
+	    System.out.println("Unsolved:");
+            Solver.printPuzzle(unsolved);
+
             long old = System.nanoTime();
             int[] ans = Solver.solve(unsolved);
             long time = System.nanoTime() - old;
-            System.out.println("Unsolved:");
-            Solver.printPuzzle(unsolved);
-            System.out.println("\nSolved:");
+            
+	    System.out.println("\nSolved:");
             Solver.printPuzzle(ans);
-            if (Arrays.equals(ans,puzzles.getAnswer(i))) {
+            
+	    if (Arrays.equals(ans,puzzles.getAnswer(i))) {
                 System.out.println("The solved puzzle matches the answer key!");
                 times.addValue(time/1000000.0);
             } else{
@@ -25,7 +29,8 @@ public class SpeedTest {
                 break;
             }
         }
-        System.out.println("\nTime Statistics(ms):");
+        
+	System.out.println("\nTime Statistics(ms):");
         System.out.println("Mean: " + times.getMean());
         System.out.println("Median: " + times.getPercentile(50));
         System.out.println("Min: " + times.getMin());
