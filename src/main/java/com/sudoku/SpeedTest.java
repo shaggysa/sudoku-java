@@ -4,6 +4,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 public class SpeedTest {
     public static void speedTest (String fileName, int firstLine, int lastLine){
+	long startTime = System.nanoTime();
         Reader puzzles = new Reader(fileName);
         DescriptiveStatistics times = new DescriptiveStatistics();
         for (int i = firstLine; i <= lastLine; i++){
@@ -30,11 +31,12 @@ public class SpeedTest {
             }
         }
         
-	System.out.println("\nTime Statistics(ms):");
+        System.out.println("\nTime Statistics(ms):");
         System.out.println("Mean: " + times.getMean());
         System.out.println("Median: " + times.getPercentile(50));
         System.out.println("Min: " + times.getMin());
         System.out.println("Max: " + times.getMax());
-        System.out.println("Total: " + times.getSum());
+        System.out.println("Total (solving time): " + times.getSum());
+        System.out.println("Total (including all file reading and puzzle printing overhead): " + (System.nanoTime() - startTime) / 1000000.0);
     }
 }
