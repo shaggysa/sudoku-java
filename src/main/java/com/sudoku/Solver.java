@@ -1,7 +1,5 @@
 package com.sudoku;
 
-import java.util.HashSet;
-
 public class Solver {
     public static void printPuzzle(int[] puzzle){
         for (int i = 0; i < 9; i++){
@@ -13,14 +11,15 @@ public class Solver {
     }
 
     private static boolean noRepeats(int[] list){
-        HashSet<Integer> nums = new HashSet<>();
+        boolean[] seen = new boolean[10];
         for (int item:list){
             if (item == 0){
                 continue;
             }
-            if (!nums.add(item)){
+            if (seen[item]){
                 return false;
             }
+            seen[item] = true;
         }
         return true;
     }
