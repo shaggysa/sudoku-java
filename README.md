@@ -1,10 +1,12 @@
 # sudoku-java
-A java version of my sudoku solver program. It is much more efficient.
+A java version of my sudoku solver program. It can solve 1000 puzzles in 35 ms. 
 
-Currently in early alpha. You must run with the .bat or .sh file in order for the program to work due to a required flag.
+Currently in early alpha.
 The current setup will simply solve 999 preloaded puzzles and report back with the speed.
 
 # usage
-Download the .zip from the latest release and run the executable appropriate for your OS (.bat on windows and .sh on linux or mac)
+Download the .jar file from the lastest release and run it with "java -jar sudoku-2.0.jar" to solve the pre-loaded puzzles. If you want to have it solve your own puzzles, you can run it with "java -jar sudoku-2.0.jar {filename}".
 
-If you are a more advanced user, you can download the source code and run mvn package to build the jar yourself. Just ensure that you use the -Xss32M flag when you run the jar file.
+Note that the jar and the csv file with your puzzles must be in the same folder.
+
+If you are a more advanced user, you can clone the repo and run mvn package to build the jar yourself.
