@@ -1,61 +1,72 @@
 package com.sudoku;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
-
-import com.opencsv.CSVReader;
-import com.opencsv.exceptions.CsvException;
 
 public class Reader {
-    private final ArrayList<ArrayList<String>> puzzleList;
+    public ArrayList<short[]> unsolvedPuzzles = new ArrayList<>();
+    public ArrayList<short[]> solvedPuzzles = new ArrayList<>();
+    public int len;
 
-    public Reader(String filename) {
-        this.puzzleList = readCSV(filename);
+    public Reader(String filename, boolean preloaded) {
+        readCSV(filename, preloaded);
+        this.len = unsolvedPuzzles.size();
     }
     
-    private ArrayList<ArrayList<String>> readCSV(String filename) {
-    ArrayList<String> unsolved = new ArrayList<>();
-    ArrayList<String> solved = new ArrayList<>();
-    ArrayList<ArrayList<String>> all = new ArrayList<>();
-    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(filename);
-         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-         CSVReader reader = new CSVReader(inputStreamReader)) {
-        
-        List<String[]> allRows = reader.readAll();
-        for (String[] row : allRows) {
-            if (row.length == 2) {
-                unsolved.add(row[0]);
-                solved.add(row[1]);
-            } else if (row.length == 1){
-                unsolved.add(row[0]);
+    private void readCSV(String filename, boolean preloaded) {
+        if (preloaded) {
+            boolean firstLine = true;
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream("puzzles.csv")))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (firstLine) {
+                        firstLine = false;
+                        continue;
+                    }
+                    short[] unsolved = new short[81];
+                    short[] solved = new short[81];
+                    for (int i = 0; i < 81; i++) {
+                        unsolved[i] = (short) (line.charAt(i) - '0');
+                        solved[i] = (short) (line.charAt(i + 82) - '0');
+                    }
+                    this.unsolvedPuzzles.add(unsolved);
+                    this.solvedPuzzles.add(solved);
+
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            boolean firstLine = true;
+            try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (firstLine) {
+                        firstLine = false;
+                        continue;
+                    }
+                    short[] unsolved = new short[81];
+                    short[] solved = new short[81];
+                    for (int i = 0; i < 81; i++) {
+                        unsolved[i] = (short) (line.charAt(i) - '0');
+                        solved[i] = (short) (line.charAt(i + 82) - '0');
+                    }
+                    this.unsolvedPuzzles.add(unsolved);
+                    this.solvedPuzzles.add(solved);
+                }
+            } catch (IOException e) {
+                System.err.println("Could not read " + filename);
+                e.printStackTrace();
             }
         }
-        all.add(unsolved);
-        all.add(solved);
-
-        
-    } catch (IOException | CsvException e) {
-        System.err.println("Error reading CSV: " + e.getMessage());
     }
-    return all;
-}
-    public int[] getPuzzle (int lineNumber){
-        String puzzleString = this.puzzleList.get(0).get(lineNumber - 1);
-        int[] puzzle = new int[81];
-        for (int i = 0; i < 81; i++){
-            puzzle[i] = Character.getNumericValue(puzzleString.charAt(i));
-        }
-        return puzzle;
+    short[] getPuzzle (int lineNumber){
+        return this.unsolvedPuzzles.get(lineNumber - 2);
     }
-    public int[] getAnswer (int lineNumber){
-        String puzzleString = this.puzzleList.get(1).get(lineNumber - 1);
-        int[] puzzle = new int[81];
-        for (int i = 0; i < 81; i++){
-            puzzle[i] = Character.getNumericValue(puzzleString.charAt(i));
-        }
-        return puzzle;
+    short[] getAnswer (int lineNumber){
+        return this.solvedPuzzles.get(lineNumber - 2);
     }
 }

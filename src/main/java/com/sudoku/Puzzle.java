@@ -4,21 +4,21 @@ import java.util.*;
 
 
 public class Puzzle {
-    public int[] puzzle = new int[81];
-    public ArrayList<Integer> blankPositions = new ArrayList<>();
-    public HashMap<Integer, ArrayList<Integer>> possibilities = new HashMap<>();
-    public HashMap<Integer, Integer> currentPos = new HashMap<>();
-    public boolean brandNew = true;
+    public short[] puzzle = new short[81];
+    public ArrayList<Short> blankPositions = new ArrayList<>();
+    public ArrayList<ArrayList<Short>> possibilities = new ArrayList<>();
+    public ArrayList<boolean[]> cachedPossibilites = new ArrayList<>();
+    public ArrayList<Short> currentPos = new ArrayList<>();
     public boolean solved = false;
 
-    public Puzzle(int[] puzzle){
+    public Puzzle(short[] puzzle){
         this.puzzle = puzzle;
         gatherBlanks();
-        forwardInit();
     }
-    private ArrayList<Integer> getPossibilites(int position) {
+
+    ArrayList<Short> getPossibilites(int position) {
         boolean[] seen = new boolean[10];
-        ArrayList<Integer> possibilities = new ArrayList<>();
+        ArrayList<Short> possibilities = new ArrayList<>();
         int row = position / 9;
         int col = position % 9;
 
@@ -36,7 +36,7 @@ public class Puzzle {
             seen[this.puzzle[i + (row*9)]] = true;
             seen[this.puzzle[col + (i * 9)]] = true;
         }
-        for (int i = 1; i < 10; i++) {
+        for (short i = 1; i < 10; i++) {
             if (!seen[i]) {
                 possibilities.add(i);
             }
@@ -44,29 +44,36 @@ public class Puzzle {
         return possibilities;
     }
     private void gatherBlanks(){
-        for (int i = 0; i < 81; i++){
+        for (short i = 0; i < 81; i++){
             if (this.puzzle[i] == 0){
                 this.blankPositions.add(i);
             }
         }
     }
 
-
     public void forwardInit(){
-        ArrayList<Integer> toRemove = new ArrayList<>();
-        for (int i:blankPositions){
-            ArrayList<Integer> tempPossibilities = getPossibilites(i);
-            if (tempPossibilities.size() == 1) {
-                this.puzzle[i] = tempPossibilities.get(0);
+        while (true) {
+        ArrayList<Short> toRemove = new ArrayList<>();
+        for (short i:this.blankPositions){
+            ArrayList<Short> possibilities = getPossibilites(i);
+            if (possibilities.size() == 1) {
+                this.puzzle[i] = possibilities.get(0);
                 toRemove.add(i);
-            } else{
-                this.possibilities.put(i, tempPossibilities);
-                this.currentPos.put(i, -1);
             }
-
         }
-        for (int item:toRemove) {
-            this.blankPositions.remove(Integer.valueOf(item));
+        if (toRemove.size() == this.blankPositions.size()) {
+            this.solved = true;
+            return;
+            } else if (toRemove.isEmpty()) {
+            for (short item : this.blankPositions) {
+                this.possibilities.add(getPossibilites(item));
+                this.currentPos.add((short) -1);
+            }
+            return;
+        }
+            for (short item:toRemove) {
+                this.blankPositions.remove(Short.valueOf(item));
+            }
         }
     }
 }
